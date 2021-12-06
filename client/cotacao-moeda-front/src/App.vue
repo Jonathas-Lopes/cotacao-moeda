@@ -1,21 +1,28 @@
 <template>
   <div id="app">
-    <v-app 
-      ><v-container fluid>
-        <v-row>
-          <v-col md="2"><sideMenu /></v-col>
-          <v-col md="10"> <router-view /></v-col>
-        </v-row> </v-container
-    ></v-app>
+    <v-app>
+      <NavBar class="NavBar" />
+      <router-view />
+    </v-app>
   </div>
 </template>
 <script>
 // @ is an alias to /src
-import SideMenu from "@/components/SideMenu.vue";
+
+import Tab from "@/components/Tab.vue";
+import chartMethods from '@/methods/chartMethods'
 
 export default {
   components: {
-    SideMenu,
+    NavBar: Tab,
+  },
+  created() {
+    chartMethods.updateChart(this)
+    
+  },
+  methods: {
+    
+    
   },
 };
 </script>
@@ -26,18 +33,17 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+.NavBar {
+  margin-bottom: 30px;
 
   a {
+    text-decoration: none;
     font-weight: bold;
-    color: #2c3e50;
 
     &.router-link-exact-active {
-      color: #42b983;
+      color: black;
     }
   }
 }
