@@ -1,15 +1,20 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import CotacaoReal from '../views/CotacaoReal.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: '/cotacao-real',
+    name: 'cotacao',
+    component: CotacaoReal
   },
+  // {
+  //   path:'/acoes',
+  //   name:'acoes',
+  //   component:'<h1>teste</h1>'
+  // },
   {
     path: '/about',
     name: 'About',
@@ -21,6 +26,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  mode:'history',
   routes
 })
 

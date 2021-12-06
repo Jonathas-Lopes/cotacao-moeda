@@ -19,7 +19,7 @@ export default new Vuetify({
       success: '#4caf50'
       },
       light: {
-        primary:'#4caf50',
+        primary:'#ffffff',
         secondary:'#795548',
         accent:'#ffc107',
         error:'#ff5722',
