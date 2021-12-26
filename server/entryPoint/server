@@ -1,14 +1,17 @@
-const env = require("../env.json");
+const env = require("../.env.json");
 var app = require("../src/app");
 var debug = require("debug")("websocket-teste:server");
 var http = require("http").Server(app);
+const integrationBacen = require('../src/integrations/bacen/integration')
 const io = require("socket.io")(http, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   },
 });
-
+const connection = require('../src/db/connection/connection');
+connection()
+var teste = integrationBacen("USD-BRL,EUR-BRL,BTC-BRL", io)
 const PORT = env.PORT;
 
 require("../src/sockets/index")(io);
@@ -16,5 +19,5 @@ require("../src/sockets/index")(io);
 
 
 http.listen(PORT, function () {
-  console.log("listening on *:3010");
+  console.log(`listening on *:${env.PORT}`);
 });
