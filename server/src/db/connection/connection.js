@@ -1,9 +1,12 @@
 const mongoose = require("mongoose")
-const connection = require('../../../.env.json').mongo
+require('dotenv').config() 
 
 
-const connect = function () {
-    mongoose.connect(`${connection.Server}:${connection.DB_PORT}/${connection.Database}`);
-    mongoose.connection.on("error", (error) => console.log(error));
+const connectionConfig = {
+    connect : async function () {
+        await mongoose.connect(`${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_COLLECTION}`);
+
+    },
+    db: mongoose.connection
 }
-module.exports = connect;
+module.exports = connectionConfig;
