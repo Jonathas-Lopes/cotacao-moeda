@@ -1,49 +1,72 @@
-const mongoose = require("mongoose");
-const CurrencySchema = require("../schema/currencySchema")
-const CurrencyModel = mongoose.model("currency", CurrencySchema);
-const bacenValidator = require('../../utils/validators/bacenValidator')
-
+const mongoose = require('mongoose');
+const CurrencySchema = require('../schema/currencySchema');
+const CurrencyModel = mongoose.model('currency', CurrencySchema);
+const bacenValidator = require('../../utils/validators/bacenValidator');
+const { array } = require('joi');
 
 const currency = {
 
-    find: async function () {
-        return await CurrencyModel.find({}).limit(50)
-    },
-    insert: async function (currencyNames, currencyObj) {
-        const registers = currencyNames.map((key) => ({
+  listCurrencies: async function (aggregate) {
 
-            'currencyName': currencyObj[key].code,
-            'high': new Array(currencyObj[key].high),
-            'low': new Array(currencyObj[key].low),
-            'date': new Array(currencyObj[key].create_date)
-        }))
+    if (aggregate) {
+      return await CurrencyModel.aggregate([
 
-        if (!bacenValidator.validate(registers)) {
-            for (let register in registers) {
-
-
-                const currency = await CurrencyModel.findOne({ currencyName: registers[register].currencyName })
-
-
-
-                if (!currency) {
-                    await CurrencyModel.create(registers[register]);
-                }
-                else {
-
-
-                    await CurrencyModel.updateOne(
-                        { currencyName: registers[register].currencyName },
-                        { $push: { high: registers[register].high, low: registers[register].low, date: registers[register].date } }
-
-
-                    )
-                }
+        {
+          $project: {
+            currencyName: '$currencyName',
+            low: {
+              $slice: ['$low', -1]
+            },
+            high: {
+              $slice: ['$high', -1]
+            },
+            date: {
+              $slice: ['$date', -1]
             }
+          }
         }
+      ]);
+
     }
-}
+    else
+      return await CurrencyModel.find({});
+  },
+  insertCurrency: async function (currencyNames, currencyObj) {
 
+    if (!bacenValidator.hasInvalidField(currencyObj)) {
 
+      const currencyList = Array.from(await CurrencyModel.find({ currencyName: { $in: currencyNames } }));
+      const currencyListToBeInserted = currencyNames
+        .filter(currencyName => currencyList.find(item => item.currencyName === currencyName) == null)
+        .map(currencyName => ({
+          currencyName,
+          high: [currencyObj[currencyName].high],
+          low: [currencyObj[currencyName].low],
+          date: [currencyObj[currencyName].create_date],
+        }));
+
+      const currencyListToBeUpdated = currencyList.map(item => ({
+        updateOne: {
+          filter: { currencyName: item.currencyName },
+          update: {
+            $push: {
+              high: currencyObj[item.currencyName].high,
+              low: currencyObj[item.currencyName].low,
+              date: currencyObj[item.currencyName].create_date
+            }
+          },
+        }
+      }));
+
+      const registers = await CurrencyModel.insertMany(currencyListToBeInserted);
+
+      await CurrencyModel.bulkWrite(currencyListToBeUpdated);
+
+    }
+
+  },
+  CurrencyModel: CurrencyModel
+
+};
 
 module.exports = currency;
