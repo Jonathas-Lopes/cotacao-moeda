@@ -1,13 +1,14 @@
+const currency = require('../db/model/currencyModel');
 let socket = (io) => {
-  io.on("connection", function (socket) {
-    // active(socket);
-    // users(socket);
-    console.log("A user connected");
+  io.once('connection', async function (socket) {
+    socket.emit('currencies', await currency.listCurrencies());
 
-    socket.on("disconnect", function () {
-      console.log("A user disconnected");
+    console.log('A user connected');
+
+    socket.on('disconnect', function () {
+      console.log('A user disconnected');
     });
   });
-  //active(io);
+
 };
 module.exports = socket;
