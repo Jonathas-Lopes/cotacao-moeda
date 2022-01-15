@@ -1,24 +1,24 @@
-                         require('dotenv').config()
-const app              = require("../src/app");
-const debug            = require("debug")("websocket-teste:server");
-const http             = require("http").Server(app);
-const integrationBacen = require('../src/integrations/bacen/integration')
-const connection       = require('../src/db/connection/connection');
-const io               = require("socket.io")(http, {
+require('dotenv').config();
+const app = require('../src/app');
+const debug = require('debug')('websocket-teste:server');
+const http = require('http').Server(app);
+const integrationBacen = require('../src/integrations/bacen/integration');
+const connection = require('../src/db/connection/connection');
+const io = require('socket.io')(http, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
+    origin: '*',
+    methods: ['GET', 'POST'],
   },
 });
 
-connection.connect()
-integrationBacen("USD-BRL,EUR-BRL,BTC-BRL", io)
+connection.connect();
+integrationBacen('USD-BRL,EUR-BRL,BTC-BRL', io);
 const PORT = process.env.SERVER_PORT;
 
-require("../src/sockets/index")(io);
+require('../src/sockets/index')(io);
 
-connection.db.on('connected', () => {
+connection.db.once('open', () => {
   http.listen(PORT, function () {
     console.log(`listening on *:${PORT}`);
   });
-})
+});
