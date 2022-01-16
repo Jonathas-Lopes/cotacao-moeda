@@ -1,71 +1,54 @@
 const mongoose = require('mongoose');
 const CurrencySchema = require('../schema/currencySchema');
+
 const CurrencyModel = mongoose.model('currency', CurrencySchema);
 const bacenValidator = require('../../utils/validators/bacenValidator');
-const { array } = require('joi');
 
 const currency = {
 
-  listCurrencies: async function (aggregate) {
-
+  async listCurrencies(aggregate) {
     if (aggregate) {
-      return await CurrencyModel.aggregate([
+      return CurrencyModel.aggregate([
 
         {
           $project: {
             currencyName: '$currencyName',
             low: {
-              $slice: ['$low', -1]
+              $slice: ['$low', -1],
             },
             high: {
-              $slice: ['$high', -1]
+              $slice: ['$high', -1],
             },
             date: {
-              $slice: ['$date', -1]
-            }
-          }
-        }
+              $slice: ['$date', -1],
+            },
+          },
+        },
       ]);
-
-    }
-    else
-      return await CurrencyModel.find({});
+    } return CurrencyModel.find({});
   },
-  insertCurrency: async function (currencyNames, currencyObj) {
-
+  async insertCurrency(currencyObj) {
     if (!bacenValidator.hasInvalidField(currencyObj)) {
+      const currencyList = Array.from(await CurrencyModel
+        .find({ currencyName: { $in: Object.keys(currencyObj) } }));
 
-      const currencyList = Array.from(await CurrencyModel.find({ currencyName: { $in: currencyNames } }));
-      const currencyListToBeInserted = currencyNames
-        .filter(currencyName => currencyList.find(item => item.currencyName === currencyName) == null)
-        .map(currencyName => ({
-          currencyName,
-          high: [currencyObj[currencyName].high],
-          low: [currencyObj[currencyName].low],
-          date: [currencyObj[currencyName].create_date],
-        }));
-
-      const currencyListToBeUpdated = currencyList.map(item => ({
+      const currencyListToBeUpdated = currencyList.map((item) => ({
         updateOne: {
           filter: { currencyName: item.currencyName },
           update: {
             $push: {
               high: currencyObj[item.currencyName].high,
               low: currencyObj[item.currencyName].low,
-              date: currencyObj[item.currencyName].create_date
-            }
+              date: currencyObj[item.currencyName].create_date,
+            },
           },
-        }
+        },
       }));
 
-      const registers = await CurrencyModel.insertMany(currencyListToBeInserted);
-
       await CurrencyModel.bulkWrite(currencyListToBeUpdated);
-
     }
-
   },
-  CurrencyModel: CurrencyModel
+  CurrencyModel,
 
 };
 
