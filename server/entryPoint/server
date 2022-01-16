@@ -1,6 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/order */
 require('dotenv').config();
 const app = require('../src/app');
-const debug = require('debug')('websocket-teste:server');
 const http = require('http').Server(app);
 const integrationBacen = require('../src/integrations/bacen/integration');
 const connection = require('../src/db/connection/connection');
@@ -13,12 +14,12 @@ const io = require('socket.io')(http, {
 
 connection.connect();
 integrationBacen('USD-BRL,EUR-BRL,BTC-BRL', io);
-const PORT = process.env.SERVER_PORT;
+const { SERVER_PORT } = process.env;
 
 require('../src/sockets/index')(io);
 
 connection.db.once('open', () => {
-  http.listen(PORT, function () {
-    console.log(`listening on *:${PORT}`);
+  http.listen(SERVER_PORT, () => {
+    console.log(`listening on *:${SERVER_PORT}`);
   });
 });
