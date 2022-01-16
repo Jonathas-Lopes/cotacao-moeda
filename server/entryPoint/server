@@ -1,20 +1,25 @@
-const env = require("../env.json");
-var app = require("../src/app");
-var debug = require("debug")("websocket-teste:server");
-var http = require("http").Server(app);
-const io = require("socket.io")(http, {
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/order */
+require('dotenv').config();
+const app = require('../src/app');
+const http = require('http').Server(app);
+const integrationBacen = require('../src/integrations/bacen/integration');
+const connection = require('../src/db/connection/connection');
+const io = require('socket.io')(http, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
+    origin: '*',
+    methods: ['GET', 'POST'],
   },
 });
 
-const PORT = env.PORT;
+connection.connect();
+integrationBacen('USD-BRL,EUR-BRL,BTC-BRL', io);
+const { SERVER_PORT } = process.env;
 
-require("../src/sockets/index")(io);
+require('../src/sockets/index')(io);
 
-
-
-http.listen(PORT, function () {
-  console.log("listening on *:3010");
+connection.db.once('open', () => {
+  http.listen(SERVER_PORT, () => {
+    console.log(`listening on *:${SERVER_PORT}`);
+  });
 });
