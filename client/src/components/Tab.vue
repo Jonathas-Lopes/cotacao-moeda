@@ -21,6 +21,7 @@
 </template>
 
 <script>
+
 export default {
   name: "Tab",
 
@@ -32,6 +33,13 @@ export default {
       ],
     };
   },
+  created() {
+    
+    
+
+    
+    
+  }
 };
 </script>
 

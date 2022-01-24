@@ -32,6 +32,19 @@ const currency = {
       const currencyList = Array.from(await CurrencyModel
         .find({ currencyName: { $in: Object.keys(currencyObj) } }));
 
+      const currenciesToBeInserted = Object.keys(currencyObj)
+        .map((key) => {
+          if (!currencyList.find((element) => element.currencyName === key)) {
+            return ({
+              currencyName: key,
+              low: currencyObj[key].low,
+              high: currencyObj[key].high,
+              date: currencyObj[key].create_date,
+            });
+          }
+          return (undefined);
+        }).filter((element) => element !== undefined);
+
       const currencyListToBeUpdated = currencyList.map((item) => ({
         updateOne: {
           filter: { currencyName: item.currencyName },
@@ -46,6 +59,7 @@ const currency = {
       }));
 
       await CurrencyModel.bulkWrite(currencyListToBeUpdated);
+      await CurrencyModel.insertMany(currenciesToBeInserted);
     }
   },
   CurrencyModel,

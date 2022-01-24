@@ -10,14 +10,16 @@
 // @ is an alias to /src
 
 import Tab from "@/components/Tab.vue";
-import chartMethods from '@/methods/chartMethods'
+
 
 export default {
   components: {
     NavBar: Tab,
   },
   created() {
-    chartMethods.updateChart(this)
+    this.$socket.emit('getCurrencies')
+    
+   
     
   },
   methods: {
