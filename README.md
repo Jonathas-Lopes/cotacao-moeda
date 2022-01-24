@@ -4,15 +4,16 @@
 - Javascript
 - Vuejs
 - Vuex
-- vue-bootstrap
-- socketio
+- vuetify
+- socket.io
 - Spa
+- VueRouter
 
 ### Backend:
 - Nodejs
 - Javascript
 - Express
-- Socketio
+- Socket.io
 - Node-fetch
 - Integração via rest com BC
 - Mongodb
@@ -23,15 +24,40 @@
 ```shell
 /
   server/
-    
+    entrypoint/
+      server.js
+    src/
+      db/
+      integrations/
+      sockets/
+      utils/
+      app.js
   client/
+    public/
+      favicon
+      index.html
+    src/
+      assets/
+      components/
+      methods/
+      plugins/
+      router/
+      store/
+      views/
+      App.vue
+      main.js
 ```
 ## quotation history
 
 ```shell
 {
-currency:{
-date:Datetime,
-value:int
-}}
+    "_id":"",
+    "currencyName" : "",
+    "high" : [],
+    "low" : [],
+    "date" : []
+    }
 ```
+## Comandos de inicialização:
+- Backend: npm run start:dev
+- Frontend: npm run start:dev
