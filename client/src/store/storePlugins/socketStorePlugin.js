@@ -26,14 +26,10 @@ export default function createWebSocketPlugin (socket) {
         ],
       }})))
     })
-    socket.on('updateCurrencies', data=>{
+    socket.on('currenciesUpdated', data=>{
       store.commit('updateCurrency', data)
 
     })
-    store.subscribe(mutation => {
-      if (mutation.type === 'UPDATE_DATA') {
-        socket.emit('update', mutation.payload)
-      }
-    })
+    
   }
 }
