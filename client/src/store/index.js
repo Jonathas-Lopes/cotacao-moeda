@@ -18,23 +18,45 @@ export default new Vuex.Store({
   mutations: {  
     SetSideMenuItens(state, itens){
       state.sideMenuItens= itens
-      console.log(state.sideMenuItens, 's')
+      
     },  
     
-    SetCurrency(state, currency){
-      state.currencies= currency
-      console.log(state.currencies[0].currencyName, 'teste')
+    SetCurrency(state, data){
+      state.currencies= data
+      
       
     },
-    updateCurrency(state, ){
-      let arrayforexchange = Array.from(state.currencies)
+    updateCurrency(state, data ){
       
-      console.log(arrayforexchange, 'teste2')
-      
+      let arrayforexchange = data.map( (element,index ) => ({currencyName:element.currencyName, chartData:{
+        options: {
+          responsive: true,
+        },
+
+        labels: [...state.currencies[index].chartData.labels, ...element.date ],
+        datasets: [
+          {
+            label: `${element.currencyName} high`,
+            backgroundColor: "#000000",
+            data: [...state.currencies[index].chartData.datasets[0].data, ...element.high],
+            fill: false,
+            borderColor: "rgb(75, 192, 192)",
+          },
+          {
+            label: `${element.currencyName} low`,
+            backgroundColor: "#000000",
+            data: [...state.currencies[index].chartData.datasets[1].data, ...element.low],
+            fill: false,
+            borderColor: "rgb(75, 192, 0)",
+          }
+        ],
+      }}) )
+
+      state.currencies = arrayforexchange;      
     },
     SetChartName(state, chartName){
       state.chartName= chartName
-      console.log(state.chartName)
+      
     }
   },
   actions: {
