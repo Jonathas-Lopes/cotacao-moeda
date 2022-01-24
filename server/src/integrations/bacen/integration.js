@@ -8,9 +8,9 @@ const getCurrencies = async function integration(currencies, socket) {
   scheduler.schedule('* * * * *', async () => {
     const response = await fetch(`${ECONOMY_ENDPOINT}/last/${currencies}`);
     const data = await response.json();
-    currency.insertCurrency(data);
+    await currency.insertCurrency(data);
 
-    socket.emit('currencies', await currency.listCurrencies(true));
+    socket.emit('currenciesUpdated', await currency.listCurrencies(true));
   });
 };
 
